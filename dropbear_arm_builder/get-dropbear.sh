@@ -10,7 +10,7 @@ log() {
   echo "$message"
 }
 
-# Greet the user
+# Greetings
 log "This script will attempt to download and setup Dropbear SSH with init.d system startup."
 log "The default username is bear and the password is grizzly."
 log "If you are ready to get started, press any key, or Ctrl-C to cancel."
