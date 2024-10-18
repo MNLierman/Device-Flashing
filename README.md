@@ -1,4 +1,5 @@
-# System-Flashing
+# System Flashing
+#### Collected info & research about flashing network devices, routers, IoT devices, phones, tablets
 
 This is a repo where I am organizing information and research about various systems, such as NAS devices, routers, IoT devices, or anything else running linux, which I've successfully recovered, upgraded, or improved through flashing. This is primarily necessary for clients, where I end up needing to flash systems to different firmware or ugprade the existing firmware, when upgrading or replacing the hardware isn't viable at the moment. Flashing may also be necessary for me to recover their data.
 
