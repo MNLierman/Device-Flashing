@@ -48,6 +48,17 @@ Bring up both: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --
 
 mkdir /mnt/sda4; mount /dev/sda4 /mnt/sda4
 
+**Unmount rootfs after inspecting**
+(perhaps you've finished collecting necessary logs from /var/log)
+
+umount /mnt/md0, and if that fails then,
+    >  fuser -km /mnt/md0 && umount /mnt/md0
+
+**Sending new image or backup img**
+
+In 1st window, sends img: dd if=/mnt/sda4/Shares/yourrootfs.img of=/dev/md0 
+In 2nd window, refreshes every second: watch -n 1 kill -USR1 $(pidof dd)
+
 .
 
 ### Performing Data Recovery
