@@ -1,6 +1,3 @@
-WD MyCloud Unbrick Recovery (using Telnet)
-WD-MyCloud-Unbrick-RAID-Recovery-Telnet.md
-
 
 ### Introduction: WD MyCloud (All Generations) Unbrick & Data Recovery
 #### How To Recover Data from WD MyCloud (Older versions, including RAID 1-bay or 2-bay)
