@@ -10,7 +10,7 @@ log() {
   echo "$message"
 }
 
-# Greetings
+# Greet the user
 log "This script will attempt to download and setup Dropbear SSH with init.d system startup."
 log "The default username is bear and the password is grizzly."
 log "If you are ready to get started, press any key, or Ctrl-C to cancel."
@@ -27,8 +27,8 @@ chmod +x /etc/init.d/dropbearserver /usr/sbin/dropbearmulti
 
 # Create symbolic links for init.d startup
 log "Creating symbolic links for init.d startup..."
-ln -sv ../init.d/dropbearserver /etc/rc0.d/K77dropbear
-ln -sv ../init.d/dropbearserver /etc/rcS.d/S77dropbear
+ln -sv /etc/init.d/dropbearserver /etc/rc0.d/K77dropbear
+ln -sv /etc/init.d/dropbearserver /etc/rcS.d/S77dropbear
 
 # Start Dropbear service
 log "Starting Dropbear service..."
