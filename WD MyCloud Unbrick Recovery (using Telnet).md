@@ -29,11 +29,12 @@ I recently ran into a few of these old WD MyCloud devices that a client was usin
 
 ### Mounting the RAID
 #### Now that you have your environment setup, you need to mount the partitions and get the RAID online, all you will be able to see up to this point in Kitty or WinSCP is the recovery environment. I will be adding to and reroganizing this guide to make it easier to understand as I am working on a recovery project Oct 2024.
-Thank You: To Foxie, a public forums user who posted a lot of research he discovered abouth the MyClouds, this would have been so much more difficult without that. 
+Thank You: To Foxie, a public forums user who posted a lot of research he discovered about the MyClouds, this would have been so much more difficult without that. 
 
 **Info about the MyCloud Partitions & RAIDs:** The original WD firmware sets up (and requires) 8 partitions. Each group is RAID1 mirrored. It was on the forums that the other partitions are not used, and this does not appear to be accurate. When the MDADM driver loads, the system will use both SDA1 and 2 for rootfs, both SDA5 & 6 for kernel, and 7 & 8 for config. If one partition in the flash memory becomees corrupted or won't boot, it's possible that the RAID driver will boot the other partition, or attempt to recover from there error. It's also possible to, if it doesn't already, tell the driver and kernel to boot one partition and take the other offiline for fsck. Given this is a RAID1 and given these are mechanical HDDs, it would be hard to say that default driver does not failover. There would be no other purpose. Now whether it only does some of these things, all of them, or none of them, I'm not sure anyone knows this but WD, but they are used. RAID1 mirroring also allows higher read speed, but write speed could be reduced. The DATA partition of the single-bay models is NOT RAID mirrored.
 
 **Mounting rootfs (Debian OS)**
+
 You can mount the OS RAID using MDADM and check the logs if you are troubleshooting an issue with booting, or run ddrescue once mounting the RAID. 
 Bring up rootfs RAID: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2
 Mount rootfs RAID: mkdir /mnt/md0; mount /dev/md0 /mnt/md0
@@ -44,6 +45,7 @@ Bring up only sda1 to md0: mdadm --create --force /dev/md0 --verbose --metadata=
 Bring up both: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2
 
 **Mounting DATA (where shares ares located)**
+
 mkdir /mnt/sda4; mount /dev/sda4 /mnt/sda4
 
 .
