@@ -43,6 +43,7 @@ If you are unbricking your rootfs and you you previously flashed your MyCloud ut
 
 Bring up only sda1 to md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=**1** --level=raid1 --run **/dev/sda1**
 Bring up both: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2
+Mount it: mkdir /mnt/md0; mount /dev/md0 /mnt/md0
 
 **Mounting DATA (where shares ares located)**
 
