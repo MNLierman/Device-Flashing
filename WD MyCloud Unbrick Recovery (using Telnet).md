@@ -25,7 +25,7 @@ I recently ran into a few of these old WD MyCloud devices that a client was usin
 5. Start FTP server: "tcpsvd -vE 0.0.0.0 21 ftpd / &" The & should allow it to keep the command running and you can Ctrl-C to get your input back on the window and reuse the window.
 6. Open FTP file manager and connect to port 21, username root, password mycloud, same as above. You now have an easy and versatile recovery environment to recovery data, create an image of the rootfs, kernel, or config partitions to see what you did wrong, and copy logs to see why it won't boot. 
 
-.
+<br/>
 
 ### Mounting the RAID
 #### Now that you have your environment setup, you need to mount the partitions and get the RAID online, all you will be able to see up to this point in Kitty or WinSCP is the recovery environment. I will be adding to and reroganizing this guide to make it easier to understand as I am working on a recovery project Oct 2024.
@@ -41,26 +41,26 @@ Mount rootfs RAID: mkdir /mnt/md0; mount /dev/md0 /mnt/md0
 
 If you are unbricking your rootfs and you you previously flashed your MyCloud utilizing only sda1, and you want to fix that, you will need to bring that up first, save your broken image for research (if you want), format sda1, take it down, bring up the second partition, format it, take it down, and then bring up a RAID1 with both, format it, and image it. Or you could also opt to image them separately.
 
-Bring up only sda1 to md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=**1** --level=raid1 --run **/dev/sda1**
-Bring up both: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2
-Mount it: mkdir /mnt/md0; mount /dev/md0 /mnt/md0
+Bring up only sda1 to md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=**1** --level=raid1 --run **/dev/sda1**<br/>
+Bring up both: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2<br/>
+Mount it: mkdir /mnt/md0; mount /dev/md0 /mnt/md0<br/>
 
 **Mounting DATA (where shares ares located)**
 
 mkdir /mnt/sda4; mount /dev/sda4 /mnt/sda4
 
-**Unmount rootfs after inspecting**
-(perhaps you've finished collecting necessary logs from /var/log)
+**Unmount rootfs after inspecting**<br/>
+(perhaps you've finished collecting necessary logs from /var/log)<br/>
 
-umount /mnt/md0, and if that fails then,
-    >  fuser -km /mnt/md0 && umount /mnt/md0
+umount /mnt/md0, and if that fails then,<br/>
+    >  fuser -km /mnt/md0 && umount /mnt/md0<br/>
 
 **Sending new image or backup img**
 
-In 1st window, sends img: dd if=/mnt/sda4/Shares/yourrootfs.img of=/dev/md0 
+In 1st window, sends img: dd if=/mnt/sda4/Shares/yourrootfs.img of=/dev/md0 <br/>
 In 2nd window, refreshes every second: watch -n 1 kill -USR1 $(pidof dd)
 
-.
+<br/>
 
 ### Performing Data Recovery
 If you need to recovery the data, use MDADM and rebuild the RAID or force it to attempt to recover the structure that it can. Then, if you are recovering data, it's important that you plugin a drive large enough to recover the data to, you can't recover the data over the network as the recovery environment will not allow you to enable Samba (required for network shares). From there, you will want to create the basic directory structure for installing a package manager, such as Entware, binding /Opt to /tmp/opt and bind /tmp/opt to /tmp/mnt/(USBLOCATION)/entware to /tmp/opt, and /dev/(USBLOCATION) to /tmp/mnt/(USBLOCATION). I will upload a sample script at some point soon, this sounds complicated but it's not. The reason this is necessary is that / is read-only in recovery as it's mounted in memory. /tmp is mounted as read-write in memory but it's limited to somewhere around 50-100 mb. By plugging in a ext SSD or thumb drive, you can mount/bind a package manager over read-only directories such as /opt and install live packages and data recovery tools to your ext SSD. This your best bet in circumstances like this, short from taking apart the MyCloud, hoping it's not soldering, and trying to rebuild the RAID on your own PC. 
