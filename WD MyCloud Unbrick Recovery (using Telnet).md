@@ -35,9 +35,9 @@ Thank You: To Foxie, a public forums user who posted a lot of research he discov
 
 **Mounting rootfs (Debian OS)**
 
-You can mount the OS RAID using MDADM and check the logs if you are troubleshooting an issue with booting, or run ddrescue once mounting the RAID. 
-Bring up rootfs RAID: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2
-Mount rootfs RAID: mkdir /mnt/md0; mount /dev/md0 /mnt/md0
+You can mount the OS RAID using MDADM and check the logs if you are troubleshooting an issue with booting, or run ddrescue once mounting the RAID. <br/>
+Bring up rootfs RAID: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2<br/>
+Mount rootfs RAID: mkdir /mnt/md0; mount /dev/md0 /mnt/md0<br/>
 
 If you are unbricking your rootfs and you you previously flashed your MyCloud utilizing only sda1, and you want to fix that, you will need to bring that up first, save your broken image for research (if you want), format sda1, take it down, bring up the second partition, format it, take it down, and then bring up a RAID1 with both, format it, and image it. Or you could also opt to image them separately.
 
@@ -58,7 +58,7 @@ umount /mnt/md0, and if that fails then,<br/>
 **Sending new image or backup img**
 
 In 1st window, sends img: dd if=/mnt/sda4/Shares/yourrootfs.img of=/dev/md0 <br/>
-In 2nd window, refreshes every second: watch -n 1 kill -USR1 $(pidof dd)
+In 2nd window, refreshes every second: watch -n 1 kill -USR1 $(pidof dd)<br/>
 
 <br/>
 
