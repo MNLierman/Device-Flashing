@@ -18,12 +18,12 @@ I recently ran into a few of these old WD MyCloud devices that a client was usin
 **Steps:**
 
 1. MyCloud not booting -> 1st step, plug your PC/laptop into the MyCloud directly via ethernet, from the tools zip, and start a DHCP server window and continuous ping with the magic packet targeting the MAC address. The needed files are in the link above and I will upload them here soon.
--- How this works: The MyCloud tries for 3-5 seconds on bootup to see a DHCP server on the network with the IP range of 192.168.0.1. I actually haven't tested other ranges but you could potentially serve it an unused IP range from your primary network, like x.x.x.250-253 or something which I've never seen any router serve out before, so that would be a safe range.
-2. Run telnet script to serve the MyCloud a 200MB recovery img with busybox.
-3. Open 2 or 3 telnet windows using Putty or Kitty on the IP of the MyCloud port 23 and connection. Default should be 192.168.0.4, username root, password mycloud.
-4. Get it on your primary network. Set static IP: "ifconfig eth0 192.168.1.200 netmask 255.255.255.0 up && route add default gw 192.168.1.1 && ifconfig eth0 down && ifconfig eth0 up" **Obviously replace with your IP.** You could also change the DHCP server script to server the MyCloud an unused range within your router's DHCP pool if you want, and that should work. I choose to use ifconfig, you could even do both just to be sure.
-5. Start FTP server: "tcpsvd -vE 0.0.0.0 21 ftpd / &" The & should allow it to keep the command running and you can Ctrl-C to get your input back on the window and reuse the window.
-6. Open FTP file manager and connect to port 21, username root, password mycloud, same as above. You now have an easy and versatile recovery environment to recovery data, create an image of the rootfs, kernel, or config partitions to see what you did wrong, and copy logs to see why it won't boot. 
+-- How this works: The MyCloud tries for 3-5 seconds on bootup to see a DHCP server on the network with the IP range of `192.168.0.1` I actually haven't tested other ranges but you could potentially serve it an unused IP range from your primary network, like `x.x.x.250-253` or something which I've never seen any router serve out before, so that would be a safe range.
+2. Run telnet script to serve the MyCloud the 20MB recovery img with busybox.
+3. Open 2 or 3 telnet windows using Putty or Kitty on the IP of the MyCloud port 23 and connection. Default should be `192.168.0.4`, username `root`, password `mycloud`.
+4. Get it on your primary network. Set static IP: "`ifconfig eth0 192.168.1.200 netmask 255.255.255.0 up && route add default gw 192.168.1.1 && ifconfig eth0 down && ifconfig eth0 up`" **Obviously replace with your IP.** You could also change the DHCP server script to server the MyCloud an unused range within your router's DHCP pool if you want, and that should work. I choose to use ifconfig, you could even do both just to be sure.
+5. Start FTP server: `tcpsvd -vE 0.0.0.0 21 ftpd / &` The `&` should allow it to keep the command running and you can Ctrl-C to get your input back on the window and reuse the window.
+6. Open FTP file manager and connect to port `21`, username `root`, password `mycloud`, same as above. **You now have an easy and versatile recovery environment** to manipulate/work with your MyCloud, recover data, create an image of the rootfs, kernel, or config partitions to see what you did wrong, and even copy logs to see why it won't boot. 
 
 <br/>
 
@@ -36,35 +36,35 @@ Thank You: To Foxie, a public forums user who posted a lot of research he discov
 **Mounting rootfs (Debian OS)**
 
 You can mount the OS RAID using MDADM and check the logs if you are troubleshooting an issue with booting, or run ddrescue once mounting the RAID. <br/>
-Bring up rootfs RAID: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2<br/>
-Mount rootfs RAID: mkdir /mnt/md0; mount /dev/md0 /mnt/md0<br/>
+Bring up rootfs RAID: `md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2`<br/>
+Mount rootfs RAID: `mkdir /mnt/md0; mount /dev/md0 /mnt/md0`<br/>
 
 If you are unbricking your rootfs and you you previously flashed your MyCloud utilizing only sda1, and you want to fix that, you will need to bring that up first, save your broken image for research (if you want), format sda1, take it down, bring up the second partition, format it, take it down, and then bring up a RAID1 with both, format it, and image it. Or you could also opt to image them separately.
 
-Bring up only sda1 to md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=**1** --level=raid1 --run **/dev/sda1**<br/>
-Bring up both: md0: mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2<br/>
-Mount it: mkdir /mnt/md0; mount /dev/md0 /mnt/md0<br/>
+Bring up only sda1 to md0: `mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=**1** --level=raid1 --run **/dev/sda1**`<br/>
+Bring up both: md0: `mdadm --create --force /dev/md0 --verbose --metadata=0.90 --raid-devices=2 --level=raid1 --run /dev/sda1 /dev/sda2`<br/>
+Mount it: `mkdir /mnt/md0; mount /dev/md0 /mnt/md0`<br/>
 
 **Mounting DATA (where shares ares located)**
 
-mkdir /mnt/sda4; mount /dev/sda4 /mnt/sda4
+`mkdir /mnt/sda4; mount /dev/sda4 /mnt/sda4`
 
 **Unmount rootfs after inspecting**<br/>
-(perhaps you've finished collecting necessary logs from /var/log)<br/>
+(perhaps you've finished collecting necessary logs from `/var/log`)<br/>
 
-umount /mnt/md0, and if that fails then,<br/>
-    >  fuser -km /mnt/md0 && umount /mnt/md0<br/>
+`umount /mnt/md0`, and if that fails then,<br/>
+    >  `fuser -km /mnt/md0 && umount /mnt/md0`<br/>
 
 **Sending new image or backup img**
 
-In 1st window, sends img: dd if=/mnt/sda4/Shares/yourrootfs.img of=/dev/md0 <br/>
-In 2nd window, refreshes every second: watch -n 1 kill -USR1 $(pidof dd)<br/>
+In 1st window, sends img: `dd if=/mnt/sda4/Shares/yourrootfs.img of=/dev/md0` <br/>
+In 2nd window, refreshes every second: `watch -n 1 kill -USR1 $(pidof dd)`<br/>
 
 <br/>
 
 ### Performing Data Recovery
-If you need to recovery the data, use MDADM and rebuild the RAID or force it to attempt to recover the structure that it can. Then, if you are recovering data, it's important that you plugin a drive large enough to recover the data to, you can't recover the data over the network as the recovery environment will not allow you to enable Samba (required for network shares). From there, you will want to create the basic directory structure for installing a package manager, such as Entware, binding /Opt to /tmp/opt and bind /tmp/opt to /tmp/mnt/(USBLOCATION)/entware to /tmp/opt, and /dev/(USBLOCATION) to /tmp/mnt/(USBLOCATION). I will upload a sample script at some point soon, this sounds complicated but it's not. The reason this is necessary is that / is read-only in recovery as it's mounted in memory. /tmp is mounted as read-write in memory but it's limited to somewhere around 50-100 mb. By plugging in a ext SSD or thumb drive, you can mount/bind a package manager over read-only directories such as /opt and install live packages and data recovery tools to your ext SSD. This your best bet in circumstances like this, short from taking apart the MyCloud, hoping it's not soldering, and trying to rebuild the RAID on your own PC. 
+If you need to recovery the data, use MDADM and rebuild the RAID or force it to attempt to recover the structure that it can. Then, if you are recovering data, it's important that you plugin a drive large enough to recover the data to, you can't recover the data over the network as the recovery environment will not allow you to enable Samba (required for network shares). From there, you will want to create the basic directory structure for installing a package manager, such as Entware, binding `/Opt` to /tmp/opt and bind `/tmp/opt` to `/tmp/mnt/(USBLOCATION)/entware` to `/tmp/opt`, and /dev/(USBLOCATION) to `/tmp/mnt/(USBLOCATION)`. I will upload a sample script at some point soon, this sounds complicated but it's not. The reason this is necessary is that `/` is read-only in recovery as it's mounted in memory. `/tmp` is mounted as read-write in memory but it's limited to somewhere around 50-100 mb. By plugging in a ext SSD or thumb drive, you can mount/bind a package manager over read-only directories such as `/opt` and install live packages and data recovery tools to your ext SSD. This your best bet in circumstances like this, short from taking apart the MyCloud, hoping it's not soldering, and trying to rebuild the RAID on your own PC. 
 
-Once you have Entware installed, you can also find other binaries that don't require a lot of dependencies, without using the package store. You can search using "site:github.com" for applications that are compiled for armv7-mo and transfer them to /opt/bin. You could even donate a thumbdrive to Entware if you are an IT technician and run into future embeddeed systems that you need to diagnose/troubleshoot/repair, as Entware is compatible with all arm processesors. From routers, to PCs, anything. You can even install SSH, and if you have any Entware thumbdrive, using the command sshd start will start the sshd server using the port number and loaded certs you have. I would recommend doing this through Dropbear but you can also installed OpenSSH-Server from Entware, though it often requires additional setup, so Dropbear would be easier. 
+Once you have Entware installed, you can also find other binaries that don't require a lot of dependencies, without using the package store. You can search using "`site:github.com`" for applications that are compiled for armv7-mo and transfer them to `/opt/bin`. You could even donate a thumbdrive to Entware if you are an IT technician and run into future embeddeed systems that you need to diagnose/troubleshoot/repair, as Entware is compatible with all arm processesors. From routers, to PCs, anything. You can even install SSH, and if you have any Entware thumbdrive, using the command sshd start will start the sshd server using the port number and loaded certs you have. I would recommend doing this through Dropbear but you can also installed OpenSSH-Server from Entware, though it often requires additional setup, so Dropbear would be easier. 
 
 ***I will continue adding to this repo with more helpful information. I may even attempt to rebuild the kernel for the MyClouds gen 1 and 2 for Debian 11 or 12 support, if I have enough time.***
