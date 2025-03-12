@@ -5,7 +5,7 @@ Recent client in which the RAID on their MyCloud crashed, all MyClouds are confi
 
 Alternatively, for data recovery: You could take apart the MyCloud, as if the HDD connector is not soldered to the board, which almost all manufacturers have been doing for 8-10 years now, they you may be able to remove the HDD, slave it to a workhorse/secondary machine that has Linux or data recovery software that can rebuild a foreign Linux RAID. I believe the filesystem on the HDD would still be Ext3/Ext4 and Windows doesn't work well with this, and there is (as of 2024) still limited Ext4 support in WSL2. This is why I choose to do it the following way. 
 
-.
+<br/>
 
 ### Steps / How It Works
 I recently ran into a few of these old WD MyCloud devices that a client was using for some pretty important data. These are the steps I took along with some suggestions and additional explanation how other sencarios and how you could handle them when recovering these devices.
